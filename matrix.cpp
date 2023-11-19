@@ -35,7 +35,7 @@ public: //спецификатор доступа, который позволя
 
     //get-функции позволяют посмотреть значения элементов данных
     void getMatrix(const char* name) {
-        cout << "Введенная матрица " << name << ":" << endl;
+        cout << "Матрица " << name << ":" << endl;
         for (int i=0; i<lines; i++) {
             for (int j=0; j<columns; j++) {
                 cout << matrix[i][j] << " ";
@@ -49,7 +49,74 @@ public: //спецификатор доступа, который позволя
             delete [] matrix[i];
         }
     }
-
+    //перегрузка оператора *
+    //в качестве параметра передаем второй объект, с которым нужно умножить первый
+    //передаем константный параметр, чтобы случайно его не изменить; принимаем по ссылке
+    Matrix operator *(const Matrix & second) {
+        if (this->columns == second.lines) {//через this обращаемся к текущему объекту класса, в котором находимся 
+            Matrix T(lines,second.columns);
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<second.columns; j++) {
+                    T.matrix[i][j] = 0;
+                    for (int k=0; k<lines; k++) {
+                        T.matrix[i][j] += this->matrix[i][k] * second.matrix[k][j];
+                    }
+                }
+            }
+            return T;
+        } else if (second.lines == 1 && second.columns == 1) {
+            Matrix T(lines,columns);
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<columns; j++) {
+                    T.matrix[i][j] = this->matrix[i][j] * second.matrix[0][0];
+                }
+            }
+            return T;
+        } else {
+            Matrix T(lines,second.columns);
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<second.columns; j++) {
+                    T.matrix[i][j] = 0;
+                }
+            } 
+            return T;
+        } 
+    } 
+    //перегрузка операторов + и -
+    Matrix operator +(const Matrix & second) {
+        Matrix T(lines,columns); //временная переменная
+        if (this->lines == second.lines && this->columns == second.columns) {
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<columns; j++) {
+                    T.matrix[i][j] = this->matrix[i][j] + second.matrix[i][j];
+                }
+            }
+        } else {
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<columns; j++) {
+                    T.matrix[i][j] = 0;
+                }
+            }
+        }
+        return T;   
+    }
+    Matrix operator -(const Matrix & second) {
+        Matrix T(lines,columns); //временная переменная
+        if (this->lines == second.lines && this->columns == second.columns) {
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<columns; j++) {
+                    T.matrix[i][j] = this->matrix[i][j] - second.matrix[i][j];
+                }
+            }
+        } else {
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<columns; j++) {
+                    T.matrix[i][j] = 0;
+                }
+            }
+        }
+        return T;   
+    }
 
 };
 int main() {    
@@ -73,45 +140,56 @@ int main() {
     //Ввод матрицы В с использованием файла
     
     ifstream file("matrix_B.txt"); //файловый поток
-    if (file.is_open()) {//если файл открыт, считаем элементы, пока не дойдем до конца
-        int k_B=0;
-        int number;
-        while (!file.eof()) {
-            file >> number; //считываем текущий символ 
-            k_B++;
-        }
-
-        file.clear();//возвращаем файл в рабочее состояние
-        file.seekg(0, ios::beg); //сброс указателя на начало (перемещаем на 0 относительно начала) 
-
-        //считаем количество строк
-        int lines_B=0;
-        string line;
-        while(getline(file,line)) {
-            file >> line;
-            lines_B++;
-        }
-        //считаем количество столбцов
-        int columns_B;
-        columns_B = k_B / lines_B;
-
-        file.clear();
-        file.seekg(0, ios::beg);
-
-        //считываем матрицу 
-        Matrix B(lines_B, columns_B);
-        for (int i=0; i<lines_B; i++) {
-            for (int j=0; j<columns_B; j++) {
-                int number_B;
-                file >>  number_B;
-                cout << number_B << " ";
-                B.setMatrix(i, j, number_B);//инициализация матрицы
-            }
-        }
-        B.getMatrix("B");
-        cout << lines_B << columns_B;
+    //считаем элементы, пока не дойдем до конца
+    int k_B=0;
+    int number;
+    while (!file.eof()) {
+        file >> number; //считываем текущий символ 
+        k_B++;
     }
-    file.close();
 
+    file.clear();//возвращаем файл в рабочее состояние
+    file.seekg(0, ios::beg); //сброс указателя на начало (перемещаем на 0 относительно начала) 
+
+    //считаем количество строк
+    int lines_B=0;
+    string line;
+    while(getline(file,line)) {
+        file >> line;
+        lines_B++;
+    }
+    //считаем количество столбцов
+    int columns_B;
+    columns_B = k_B / lines_B;
+
+    file.clear();
+    file.seekg(0, ios::beg);
+
+    //считываем матрицу 
+    Matrix B(lines_B, columns_B);
+    for (int i=0; i<lines_B; i++) {
+        for (int j=0; j<columns_B; j++) {
+            int number_B;
+            file >>  number_B;
+            B.setMatrix(i, j, number_B);//инициализация матрицы
+        }
+    }
+    B.getMatrix("B");
+    
+    file.close();
+    
+    Matrix C = A * B;
+    C.getMatrix("C - умножение матриц");
+    int m;
+    cout << "Введите число, на которое хотите умножить матрицу А: ";
+    cin >> m;
+    Matrix Scalar(1,1);
+    Scalar.setMatrix(0,0,m);
+    Matrix D = A * Scalar;
+    D.getMatrix("D - умножение на скаляр");
+    Matrix E = A + B;
+    E.getMatrix("E - сложение");
+    Matrix F = A - B;
+    F.getMatrix("F - вычитание");
     return 0;
 }
