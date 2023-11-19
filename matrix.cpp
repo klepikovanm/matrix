@@ -117,6 +117,38 @@ public: //спецификатор доступа, который позволя
         }
         return T;   
     }
+    //перегрузка операторов == и !=
+    bool operator ==(const Matrix & second){
+        if (this->lines == second.lines && this->columns == second.columns) {
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<columns; j++) {
+                    if (this->matrix[i][j] == second.matrix[i][j]) {
+                        return true;
+                    } else {
+                        return false;
+                    }  
+                } 
+            }
+        } else {
+            return false;
+        }
+    }
+    bool operator !=(const Matrix & second){
+        if (this->lines != second.lines || this->columns != second.columns) {
+            return true;
+        } else {      
+            for (int i=0; i<lines; i++) {
+                for (int j=0; j<columns; j++) {
+                    if (this->matrix[i][j] == second.matrix[i][j]) { //проверяем до первого равенства
+                        return false;
+                        break;
+                    } else {
+                        return true;
+                    }  
+                } 
+            }
+        }
+    }
 
 };
 int main() {    
@@ -187,9 +219,17 @@ int main() {
     Scalar.setMatrix(0,0,m);
     Matrix D = A * Scalar;
     D.getMatrix("D - умножение на скаляр");
+
     Matrix E = A + B;
     E.getMatrix("E - сложение");
     Matrix F = A - B;
     F.getMatrix("F - вычитание");
+
+    bool equal = A==B;
+    bool not_equal = A!=B;
+    cout << "A и В равны? - " << equal << endl;
+    cout << "А и В не равны? - " << not_equal << endl;
+
+
     return 0;
 }
