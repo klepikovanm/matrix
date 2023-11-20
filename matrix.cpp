@@ -7,7 +7,7 @@ using namespace std;
 class Matrix{
 private: //спецификатор доступа, в котором лежат переменные - элементы данных, доступ к которым есть только у методов класса
     int lines,columns;
-    int** matrix;
+    double** matrix;
 public: //спецификатор доступа, который позволяет вызывать другим функциям методы класса
 
     //Конструктор: k_lines - количество строк, k_columns - количество столбцов
@@ -15,9 +15,9 @@ public: //спецификатор доступа, который позволя
         lines = k_lines;
         columns = k_columns;
         //создание двуменого массива для матриц - [номер строки][номер столбца]
-        matrix = (int**) new int* [lines];
+        matrix = (double**) new double* [lines];
         for (int i=0; i<lines; i++) {
-             matrix[i] = (int*) new int [columns];
+             matrix[i] = (double*) new double [columns];
         };
         //заполнение массива нулями
         for (int i=0; i<lines; i++){
@@ -29,7 +29,7 @@ public: //спецификатор доступа, который позволя
 
     //set-функции инициализируют элементы данных
     //n_lines - номер строки, n_columns - номер столбца, number - число
-    void setMatrix(int n_lines, int n_columns, int number) {
+    void setMatrix(int n_lines, int n_columns, double number) {
         matrix[n_lines][n_columns] = number;
     }
 
@@ -137,7 +137,7 @@ public: //спецификатор доступа, который позволя
     }
     //функция для сложения строк или столбцов
     //если thing = 0 - строка, если thing = 1 - столбец
-    void plus(int thing, int one, int two, int L) {
+    void plus(int thing, int one, int two, double L) {
         if (thing == 0) {
             for (int i=0; i<columns; i++) {
                 matrix[one-1][i] += matrix[two-1][i] * L;
@@ -149,7 +149,7 @@ public: //спецификатор доступа, который позволя
         }
     }    
     //функция для вычитания строк или столбцов
-    void minus(int thing, int one, int two, int L) {
+    void minus(int thing, int one, int two, double L) {
         if (thing == 0) {
             for (int i=0; i<columns; i++) {
                 matrix[one-1][i] -= matrix[two-1][i] * L;
@@ -161,7 +161,7 @@ public: //спецификатор доступа, который позволя
         }
     }
     //функция для преобразования отдельной строки или столбца
-    void multiply(int thing, int one, int L) {
+    void multiply(int thing, int one, double L) {
         if (thing == 0) {
             for (int i=0; i<columns; i++) {
                 matrix[one-1][i] *= L;
@@ -189,13 +189,13 @@ public: //спецификатор доступа, который позволя
             }
         } 
     }
-    
+
 };
 
 int main() {    
     //Ввод матрицы А вручную:
     int lines_A,columns_A;
-    int number_A;
+    double number_A;
     cout << "Введите количество строк матрицы А: ";
     cin >> lines_A;
     cout << "Введите количество столбцов матрицы А: ";
@@ -215,7 +215,7 @@ int main() {
     ifstream file("matrix_B.txt"); //файловый поток
     //считаем элементы, пока не дойдем до конца
     int k_B=0;
-    int number;
+    double number;
     while (!file.eof()) {
         file >> number; //считываем текущий символ 
         k_B++;
@@ -242,7 +242,7 @@ int main() {
     Matrix B(lines_B, columns_B);
     for (int i=0; i<lines_B; i++) {
         for (int j=0; j<columns_B; j++) {
-            int number_B;
+            double number_B;
             file >>  number_B;
             B.setMatrix(i, j, number_B);//инициализация матрицы
         }
