@@ -122,35 +122,76 @@ public: //спецификатор доступа, который позволя
         if (this->lines == second.lines && this->columns == second.columns) {
             for (int i=0; i<lines; i++) {
                 for (int j=0; j<columns; j++) {
-                    if (this->matrix[i][j] == second.matrix[i][j]) {
-                        return true;
-                    } else {
+                    if (this->matrix[i][j] != second.matrix[i][j]) {
                         return false;
-                    }  
+                    }
                 } 
             }
+            return true;
         } else {
             return false;
         }
     }
     bool operator !=(const Matrix & second){
-        if (this->lines != second.lines || this->columns != second.columns) {
-            return true;
-        } else {      
+        return !(*this == second); //разыменовали this, при проверке на неравенство ссылаемся на равенство
+    }
+    //функция для сложения строк или столбцов
+    //если thing = 0 - строка, если thing = 1 - столбец
+    void plus(int thing, int one, int two, int L) {
+        if (thing == 0) {
+            for (int i=0; i<columns; i++) {
+                matrix[one-1][i] += matrix[two-1][i] * L;
+            }
+        } else {
             for (int i=0; i<lines; i++) {
-                for (int j=0; j<columns; j++) {
-                    if (this->matrix[i][j] == second.matrix[i][j]) { //проверяем до первого равенства
-                        return false;
-                        break;
-                    } else {
-                        return true;
-                    }  
-                } 
+                matrix[i][one-1] += matrix[i][two-1] * L;
+            }
+        }
+    }    
+    //функция для вычитания строк или столбцов
+    void minus(int thing, int one, int two, int L) {
+        if (thing == 0) {
+            for (int i=0; i<columns; i++) {
+                matrix[one-1][i] -= matrix[two-1][i] * L;
+            }
+        } else {
+            for (int i=0; i<lines; i++) {
+                matrix[i][one-1] -= matrix[i][two-1] * L;
             }
         }
     }
-
+    //функция для преобразования отдельной строки или столбца
+    void multiply(int thing, int one, int L) {
+        if (thing == 0) {
+            for (int i=0; i<columns; i++) {
+                matrix[one-1][i] *= L;
+            }
+        } else {
+            for (int i=0; i<lines; i++) {
+                matrix[i][one-1] *= L;
+            }
+        }
+    }
+    //функция для перестановки строки или столбца
+    void change(int thing, int one, int two) {
+       int temp;
+       if (thing == 0) {
+            for (int i=0; i<columns; i++) {
+                temp = matrix[one-1][i];
+                matrix[one-1][i] = matrix[two-1][i];
+                matrix[two-1][i] = temp;
+            }
+        } else {
+            for (int i=0; i<lines; i++) {
+                temp = matrix[i][one-1];
+                matrix[i][one-1] = matrix[i][two-1];
+                matrix[i][two-1] = temp;
+            }
+        } 
+    }
+    
 };
+
 int main() {    
     //Ввод матрицы А вручную:
     int lines_A,columns_A;
@@ -230,6 +271,13 @@ int main() {
     cout << "A и В равны? - " << equal << endl;
     cout << "А и В не равны? - " << not_equal << endl;
 
-
+    A.plus(0,1,2,3);
+    A.getMatrix("A - к первой строке прибавили вторую, умноженную на 3");
+    A.minus(0,2,1,2);
+    A.getMatrix("A - из второй строки вычли первую, умноженную на 2");
+    A.multiply(1,2,6);
+    A.getMatrix("А - второй столбец умножаем на 6");
+    A.change(1,1,2);
+    A.getMatrix("A - первый столбец меняем со вторым");
     return 0;
 }
