@@ -54,7 +54,7 @@ public: //спецификатор доступа, который позволя
     //передаем константный параметр, чтобы случайно его не изменить; принимаем по ссылке
     Matrix operator *(const Matrix & second) {
         if (this->columns == second.lines) {//через this обращаемся к текущему объекту класса, в котором находимся 
-            Matrix T(lines,second.columns);
+            Matrix T(lines,second.columns); //если количество столбцов первой матрицы равно количеству строк второй матрицы, умножаем матрицы
             for (int i=0; i<lines; i++) {
                 for (int j=0; j<second.columns; j++) {
                     T.matrix[i][j] = 0;
@@ -64,7 +64,7 @@ public: //спецификатор доступа, который позволя
                 }
             }
             return T;
-        } else if (second.lines == 1 && second.columns == 1) {
+        } else if (second.lines == 1 && second.columns == 1) { //если количество строк и столбцов второй матрицы равно 1, то это скаляр, умножаем матрицу на скаляр
             Matrix T(lines,columns);
             for (int i=0; i<lines; i++) {
                 for (int j=0; j<columns; j++) {
@@ -72,7 +72,7 @@ public: //спецификатор доступа, который позволя
                 }
             }
             return T;
-        } else {
+        } else { //если нет, то матрицы невозможно умножить, выводим нулевую матрицу, обозначающую ошибку
             Matrix T(lines,second.columns);
             for (int i=0; i<lines; i++) {
                 for (int j=0; j<second.columns; j++) {
@@ -85,13 +85,13 @@ public: //спецификатор доступа, который позволя
     //перегрузка операторов + и -
     Matrix operator +(const Matrix & second) {
         Matrix T(lines,columns); //временная переменная
-        if (this->lines == second.lines && this->columns == second.columns) {
+        if (this->lines == second.lines && this->columns == second.columns) { //если размерности матриц одинаковые, складываем
             for (int i=0; i<lines; i++) {
                 for (int j=0; j<columns; j++) {
                     T.matrix[i][j] = this->matrix[i][j] + second.matrix[i][j];
                 }
             }
-        } else {
+        } else { //иначе, выводим нулевую матрицу, обозначающую ошибку
             for (int i=0; i<lines; i++) {
                 for (int j=0; j<columns; j++) {
                     T.matrix[i][j] = 0;
@@ -119,17 +119,17 @@ public: //спецификатор доступа, который позволя
     }
     //перегрузка операторов == и !=
     bool operator ==(const Matrix & second){
-        if (this->lines == second.lines && this->columns == second.columns) {
+        if (this->lines == second.lines && this->columns == second.columns) { //если размерности матриц совпадают
             for (int i=0; i<lines; i++) {
                 for (int j=0; j<columns; j++) {
-                    if (this->matrix[i][j] != second.matrix[i][j]) {
-                        return false;
+                    if (this->matrix[i][j] != second.matrix[i][j]) {//проверяем элементы на равенство
+                        return false;//при нахождении первого несовпадения false
                     }
                 } 
             }
-            return true;
+            return true; //все совпало true
         } else {
-            return false;
+            return false;//размерность матриц не совпала
         }
     }
     bool operator !=(const Matrix & second){
@@ -189,7 +189,6 @@ public: //спецификатор доступа, который позволя
             }
         } 
     }
-
 };
 
 int main() {    
@@ -211,7 +210,6 @@ int main() {
     A.getMatrix("A");
 
     //Ввод матрицы В с использованием файла
-    
     ifstream file("matrix_B.txt"); //файловый поток
     //считаем элементы, пока не дойдем до конца
     int k_B=0;
@@ -279,5 +277,6 @@ int main() {
     A.getMatrix("А - второй столбец умножаем на 6");
     A.change(1,1,2);
     A.getMatrix("A - первый столбец меняем со вторым");
+
     return 0;
 }
