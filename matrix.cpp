@@ -8,6 +8,12 @@ class Matrix{
 private: //спецификатор доступа, в котором лежат переменные - элементы данных, доступ к которым есть только у методов класса
     int lines,columns;
     double** matrix;
+    void clear(){
+         for (int i=0; i<lines; i++) {
+            delete [] matrix[i];
+        }
+        delete matrix;
+    }
 public: //спецификатор доступа, который позволяет вызывать другим функциям методы класса
 
     //Конструктор: k_lines - количество строк, k_columns - количество столбцов
@@ -86,9 +92,7 @@ public: //спецификатор доступа, который позволя
 
     //Деструктор: нужен, чтобы освободить память, которая была выделена для двумерного массива
     ~Matrix() {
-        for (int i=0; i<lines; i++) {
-            delete [] matrix[i];
-        }
+        clear();
     }
     //перегрузка оператора * для умножения матриц
     //в качестве параметра передаем второй объект, с которым нужно умножить первый
@@ -397,6 +401,22 @@ public: //спецификатор доступа, который позволя
             cout << "Обратная матрица для заданной ";
             return temp_3;
         }
+    }
+
+    Matrix operator =(const Matrix & second) {
+        
+        clear();
+        //4x4 5x5 
+        lines = second.lines;
+        columns=second.columns;
+        matrix = new double * [lines];
+        for (int i=0; i<lines; i++) {
+            matrix[i] = new double [columns];
+            for (int j=0; j<columns; j++) {
+                matrix[i][j] = second.matrix[i][j];
+            }
+        }
+
     }
 
 };
